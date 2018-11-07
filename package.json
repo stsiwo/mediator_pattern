@@ -1,0 +1,25 @@
+{
+  "name": "mediator_pattern",
+  "version": "1.0.0",
+  "private": true,
+  "description": "mediator pattern for invoke command handler",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stsiwo/mediator_pattern.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stsiwo/mediator_pattern/issues"
+  },
+  "homepage": "https://github.com/stsiwo/mediator_pattern#readme",
+  "devDependencies": {
+    "ts-node": "^7.0.1",
+    "typescript": "^3.1.6"
+  }
+}
