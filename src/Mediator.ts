@@ -1,68 +1,71 @@
 interface IMediator {
 
-  sendMessage(message: string, component: Component): void;
-
-  addComponent(component: Component): void;
-}
-
-abstract class ComponentABS {
-
-  protected name: string;
-
-  protected mediator: IMediator;
-
-  constructor(name: string, mediator: IMediator) {
-    this.name = name;
-    this.mediator = mediator;
-  }
-
-  abstract send(message: string): void;
-
-  abstract receive(message: string): void;
+  send(request: IRequest): string;
 
 }
 
 class Mediator implements IMediator {
 
-  private components: Array<Component>;
-
-  constructor() {
-    this.components = [];
+  send(request: IRequest): string {
+    // identify a command handler for the command in args
+   
+    let commandHandler = new request.handlerConstructor(); 
+    // call handle of the command handler
+    return commandHandler.handle();
   }
 
-  sendMessage(message: string, component: Component): void {
-    this.components.map(( comp ) => {
-      if (comp !== component) return comp.receive(message);
-    });
-  }
-
-  addComponent(component: Component): void {
-    this.components.push(component);
-  }
 }
 
-class Component extends ComponentABS {
+interface IResponse { }
 
-  constructor(name: string, mediator: IMediator) {
-    super(name, mediator);
-  }
+interface IRequest {
+  handlerConstructor: IRequestHandler;
+}
 
-  send(message: string): void {
-    this.mediator.sendMessage(`${this.name}: ${message}`, this);
-  }
+interface IRequestHandler {
+  
+  handle(request: IRequest): string;
+}
 
-  receive(message: string): void {
-    console.log(`${this.name} received: ${message}`);
+interface ICommand {
+
+  createCommand(name: string): void;
+
+}
+
+class Command {
+  
+  readonly handlerConstructor: CommandHandler = CommandHandler;
+  name: string;
+
+  createCommand(name: string): void {
+    this.name = name;
+  }  
+}
+
+class CommandHandler {
+
+  handle(request: Command): string {
+    return request.name;
   }
 }
 
 let mediator: IMediator = new Mediator();
-let satoshi: ComponentABS = new Component("satoshi", mediator);
-let hitomi: ComponentABS = new Component("hitomi", mediator);
-let kaoru: ComponentABS = new Component("kaoru", mediator);
-mediator.addComponent(satoshi);
-mediator.addComponent(hitomi);
-mediator.addComponent(kaoru);
+let command: Command = new Command();
+command.createCommand("satoshi");
+/* let commandHandler: CommandHandler = new CommandHandler(); */
 
-satoshi.send("hey. everyone");
+console.log(mediator.send(command));
 
+/* interface HandlerConstructor<T> { */
+  /* new(): T; */
+/* } */
+
+/* function handlerFactory<T>(c: new () => T): T { */
+    /* return new c(); */
+/* } */
+
+/* let myHandler = CommandHandler; */
+/* var B = new myHandler(); */
+/* [>let handler: CommandHandler = handlerFactory(myHandler);<] */
+/* console.log(B); */
