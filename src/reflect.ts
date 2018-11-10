@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 class A {
 
   methodA(): void {
@@ -5,4 +7,16 @@ class A {
   }
 }
 
-Reflect.construct(A);
+let constructor = A;
+
+class B {
+
+  Aconst: Function = A;
+}
+
+let b: B = new B();
+let a: A = Reflect.construct(b.Aconst, []);
+
+console.log(a);
+
+

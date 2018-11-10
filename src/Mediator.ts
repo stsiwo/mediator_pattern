@@ -4,68 +4,95 @@ interface IMediator {
 
 }
 
-class Mediator implements IMediator {
+interface IRequest { 
 
-  send(request: IRequest): string {
-    // identify a command handler for the command in args
-   
-    let commandHandler = new request.handlerConstructor(); 
-    // call handle of the command handler
-    return commandHandler.handle();
-  }
+  handlerConstructor: Function;
 
-}
+  name: string;
 
-interface IResponse { }
-
-interface IRequest {
-  handlerConstructor: IRequestHandler;
+  createRequest(prop: string): void;
 }
 
 interface IRequestHandler {
   
   handle(request: IRequest): string;
-}
-
-interface ICommand {
-
-  createCommand(name: string): void;
 
 }
 
-class Command {
-  
-  readonly handlerConstructor: CommandHandler = CommandHandler;
+class Mediator implements IMediator {
+
+  send(request: IRequest) {
+    // identify a command handler from request's property, handlerConstructor
+    let handler: IRequestHandler = Reflect.construct(request.handlerConstructor, []);
+    // call the handler's handle method
+    return handler.handle(request);
+  }
+}
+
+class CommandA implements IRequest {
+
+  handlerConstructor: Function = CommandAHandler;
+
   name: string;
 
-  createCommand(name: string): void {
+  createRequest(name: string) {
     this.name = name;
-  }  
+  }
 }
 
-class CommandHandler {
+class CommandAHandler implements IRequestHandler {
 
-  handle(request: Command): string {
+  handle(request: IRequest) {
+    return request.name;
+  }
+}
+
+class CommandB implements IRequest {
+
+  handlerConstructor: Function = CommandAHandler;
+
+  name: string;
+
+  createRequest(name: string) {
+    this.name = name;
+  }
+}
+
+class CommandBHandler implements IRequestHandler {
+
+  handle(request: IRequest) {
+    return request.name;
+  }
+}
+
+class CommandC implements IRequest {
+
+  handlerConstructor: Function = CommandAHandler;
+
+  name: string;
+
+  createRequest(name: string) {
+    this.name = name;
+  }
+}
+
+class CommandCHandler implements IRequestHandler {
+
+  handle(request: IRequest) {
     return request.name;
   }
 }
 
 let mediator: IMediator = new Mediator();
-let command: Command = new Command();
-command.createCommand("satoshi");
-/* let commandHandler: CommandHandler = new CommandHandler(); */
+let ca: IRequest = new CommandA();
+ca.createRequest("satoshi");
+let cb: IRequest = new CommandA();
+cb.createRequest("hitomi");
+let cc: IRequest = new CommandA();
+cc.createRequest("kaoru");
 
-console.log(mediator.send(command));
+console.log(mediator.send(ca));
+console.log(mediator.send(cb));
+console.log(mediator.send(cc));
 
-/* interface HandlerConstructor<T> { */
-  /* new(): T; */
-/* } */
 
-/* function handlerFactory<T>(c: new () => T): T { */
-    /* return new c(); */
-/* } */
-
-/* let myHandler = CommandHandler; */
-/* var B = new myHandler(); */
-/* [>let handler: CommandHandler = handlerFactory(myHandler);<] */
-/* console.log(B); */
